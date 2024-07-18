@@ -394,7 +394,7 @@ class HeightmapExportDialog(QDialog, Ui_HeightmapExportDialog):
         if self.extent:
             self.canvas.scene().removeItem(self.extent)
             self.extent = None
-        self.extent = QgsRubberBand(self.canvas, True)
+        self.extent = QgsRubberBand(self.canvas)
         if self.QGIS_VERSION == 2:
             points = [QgsPoint(x_max, y_min),
                       QgsPoint(x_max, y_max),
