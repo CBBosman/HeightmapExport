@@ -549,4 +549,3 @@ class TestPath(unittest.TestCase):
         segment = Arc(0j + 70j, 35 + 35j, 0, 1, 0, 0 + 70j)
         self.assertEqual(segment.length(), 0)
         self.assertEqual(segment.point(0.5), segment.start)
-

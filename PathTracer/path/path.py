@@ -73,7 +73,7 @@ class CubicBezier(object):
         if not isinstance(other, CubicBezier):
             return NotImplemented
         return self.start == other.start and self.end == other.end and \
-               self.control1 == other.control1 and self.control2 == other.control2
+            self.control1 == other.control1 and self.control2 == other.control2
 
     def __ne__(self, other):
         if not isinstance(other, CubicBezier):
@@ -116,7 +116,7 @@ class QuadraticBezier(object):
         if not isinstance(other, QuadraticBezier):
             return NotImplemented
         return self.start == other.start and self.end == other.end and \
-               self.control == other.control
+            self.control == other.control
 
     def __ne__(self, other):
         if not isinstance(other, QuadraticBezier):
@@ -162,8 +162,9 @@ class QuadraticBezier(object):
             BA = B / A2
 
             s = (A32 * Sabc + A2 * B * (Sabc - C2) + (4 * C * A - B ** 2) *
-                    log((2 * A2 + BA + Sabc) / (BA + C2))) / (4 * A32)
+                 log((2 * A2 + BA + Sabc) / (BA + C2))) / (4 * A32)
         return s
+
 
 class Arc(object):
 
@@ -188,8 +189,8 @@ class Arc(object):
         if not isinstance(other, Arc):
             return NotImplemented
         return self.start == other.start and self.end == other.end and \
-               self.radius == other.radius and self.rotation == other.rotation and \
-               self.arc == other.arc and self.sweep == other.sweep
+            self.radius == other.radius and self.rotation == other.rotation and \
+            self.arc == other.arc and self.sweep == other.sweep
 
     def __ne__(self, other):
         if not isinstance(other, Arc):
@@ -388,8 +389,8 @@ class Path(MutableSequence):
         # Calculate the fractional distance for each segment to use in point()
         fraction = 0
         for each in self._lengths:
-          fraction += each
-          self._fractions.append(fraction)
+            fraction += each
+            self._fractions.append(fraction)
 
     def point(self, pos, error=ERROR):
 
@@ -403,9 +404,9 @@ class Path(MutableSequence):
         # Find which segment the point we search for is located on:
         i = bisect(self._fractions, pos)
         if i == 0:
-          segment_pos = pos / self._fractions[0]
+            segment_pos = pos / self._fractions[0]
         else:
-          segment_pos = (pos - self._fractions[i-1]) / (self._fractions[i]-self._fractions[i-1])
+            segment_pos = (pos - self._fractions[i-1]) / (self._fractions[i]-self._fractions[i-1])
         return self._segments[i].point(segment_pos)
 
     def length(self, error=ERROR, min_depth=MIN_DEPTH):

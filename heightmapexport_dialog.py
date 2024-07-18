@@ -3,7 +3,7 @@ Show the dialog for the Heightmap Export plugin.
 
 Heightmap Export, a QGIS plugin by Nathaniel Klumb
 
-This plugin was created to make it easy to take a raster layer, such as 
+This plugin was created to make it easy to take a raster layer, such as
 clipped USGS DEM data, and export it to a 16-bit PNG image to load into
 CAM software to create terrain relief models using CNC.
 
@@ -11,7 +11,6 @@ This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
-
 """
 from os.path import splitext
 from configparser import ConfigParser
@@ -20,43 +19,43 @@ from math import sin, cos, atan2, sqrt, radians
 from osgeo import gdal
 
 try:
-  # If this imports, we're in QGIS 2.
-  # It was renamed 'Qgis' in QGIS 3.
-  from qgis.core import QGis
-  # QGIS 2 imports.
-  from PyQt4 import QtCore, QtGui
-  from PyQt4.QtGui import (QDialog, QColor, QFileDialog, QApplication,
-                           QCursor, QDoubleValidator, QIntValidator)
-  from PyQt4.QtCore import Qt, QLocale
-  from qgis.gui import (QgsRubberBand, QgsMessageBar, QgsMapLayerComboBox,
-                        QgsMapLayerProxyModel)
-  from qgis.core import (QgsPoint, QgsProject,QgsRectangle,
-                         QgsGeometry, QgsCoordinateTransform,
-                         QgsCoordinateReferenceSystem)
-  from .heightmapexport_dialog_base_2 import Ui_HeightmapExportDialog
+    # If this imports, we're in QGIS 2.
+    # It was renamed 'Qgis' in QGIS 3.
+    from qgis.core import QGis
+    # QGIS 2 imports.
+    from PyQt4 import QtCore, QtGui
+    from PyQt4.QtGui import (QDialog, QColor, QFileDialog, QApplication,
+                             QCursor, QDoubleValidator, QIntValidator)
+    from PyQt4.QtCore import Qt, QLocale
+    from qgis.gui import (QgsRubberBand, QgsMessageBar, QgsMapLayerComboBox,
+                          QgsMapLayerProxyModel)
+    from qgis.core import (QgsPoint, QgsProject, QgsRectangle,
+                           QgsGeometry, QgsCoordinateTransform,
+                           QgsCoordinateReferenceSystem)
+    from .heightmapexport_dialog_base_2 import Ui_HeightmapExportDialog
 except ImportError:
-  # QGIS 3 imports.
-  from qgis.PyQt import QtCore, QtGui, QtWidgets
-  from qgis.PyQt.QtWidgets import QDialog, QFileDialog, QApplication
-  from qgis.PyQt.QtGui import QColor, QCursor, QDoubleValidator, QIntValidator
-  from qgis.PyQt.QtCore import Qt, QLocale
-  from qgis.gui import (QgsRubberBand, QgsMessageBar, QgsMapLayerComboBox)
-  from qgis.core import (QgsPointXY, QgsRectangle, QgsProject,
-                         QgsGeometry, QgsCoordinateTransform,
-                         QgsCoordinateReferenceSystem, QgsMapLayerProxyModel)
-  from .heightmapexport_dialog_base_3 import Ui_HeightmapExportDialog
+    # QGIS 3 imports.
+    from qgis.PyQt import QtCore, QtGui, QtWidgets
+    from qgis.PyQt.QtWidgets import QDialog, QFileDialog, QApplication
+    from qgis.PyQt.QtGui import QColor, QCursor, QDoubleValidator, QIntValidator
+    from qgis.PyQt.QtCore import Qt, QLocale
+    from qgis.gui import (QgsRubberBand, QgsMessageBar, QgsMapLayerComboBox)
+    from qgis.core import (QgsPointXY, QgsRectangle, QgsProject, QgsGeometry,
+                           QgsCoordinateTransform, QgsCoordinateReferenceSystem,
+                           QgsMapLayerProxyModel)
+    from .heightmapexport_dialog_base_3 import Ui_HeightmapExportDialog
 
-from .PathTracer import PathTracer,PathTracerGUI
+from .PathTracer import PathTracer, PathTracerGUI
 
 
 class HeightmapExportDialog(QDialog, Ui_HeightmapExportDialog):
     """Present the export dialog for the Heightmap Export plugin."""
     try:
-      QGis.QGIS_VERSION
-      QGIS_VERSION = 2
-    except:
-      QGIS_VERSION = 3  
-  
+        QGis.QGIS_VERSION
+        QGIS_VERSION = 2
+    except NameError:
+        QGIS_VERSION = 3
+
     SIZE_DECIMAL_DIGITS = 3
     SCALE_DECIMAL_DIGITS = 5
     MAXIMUM_ALLOWED_VALUE = 6371000000
@@ -64,7 +63,7 @@ class HeightmapExportDialog(QDialog, Ui_HeightmapExportDialog):
     EARTH_RADIUS = 6371000
 
     # extent is where we will keep our dashed line highlighting the layer.
-    extent = None    
+    extent = None
     # And these keep the dimensions we calculate when a layer is selected.
     height = 0
     width = 0
@@ -72,7 +71,7 @@ class HeightmapExportDialog(QDialog, Ui_HeightmapExportDialog):
     zmax = 0
     # Keep the filename of the heightmap once exported.
     heightmap = None
-    
+
     def __init__(self, iface):
         """Constructor."""
         QDialog.__init__(self)
@@ -332,7 +331,7 @@ class HeightmapExportDialog(QDialog, Ui_HeightmapExportDialog):
         # In case this takes noticeable time, change the cursor for now.
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
         extent = layer.extent()
-        
+
         # The raster layer could be in any CRS, e.g. lat/lon, UTM, etc.
         # Using a coordinate transform, we convert the bounds of the
         # raster layer to latitude and longitude in the WGS-84
@@ -340,9 +339,9 @@ class HeightmapExportDialog(QDialog, Ui_HeightmapExportDialog):
         source = layer.crs()
         wgs84 = QgsCoordinateReferenceSystem("EPSG:4326")
         if self.QGIS_VERSION == 2:
-          transform = QgsCoordinateTransform(source, wgs84)
+            transform = QgsCoordinateTransform(source, wgs84)
         else:
-          transform = QgsCoordinateTransform(source, wgs84, QgsProject.instance())
+            transform = QgsCoordinateTransform(source, wgs84, QgsProject.instance())
         rect = transform.transform(extent)
         latn = rect.yMaximum()
         lats = rect.yMinimum()
@@ -422,78 +421,74 @@ class HeightmapExportDialog(QDialog, Ui_HeightmapExportDialog):
         rec = layer.extent()
         if self.QGIS_VERSION == 2:
             meta.add_section('Source')
-            meta.set('Source','name',layer.name())
+            meta.set('Source', 'name', layer.name())
             meta.add_section('Bounds')
-            meta.set('Bounds','north',str(rec.yMaximum()))
-            meta.set('Bounds','south',str(rec.yMinimum()))
-            meta.set('Bounds','west',str(rec.xMinimum()))
-            meta.set('Bounds','east',str(rec.xMaximum()))
-            meta.set('Bounds','high',str(self.zmax))
-            meta.set('Bounds','low',str(self.zmin))
+            meta.set('Bounds', 'north', str(rec.yMaximum()))
+            meta.set('Bounds', 'south', str(rec.yMinimum()))
+            meta.set('Bounds', 'west', str(rec.xMinimum()))
+            meta.set('Bounds', 'east', str(rec.xMaximum()))
+            meta.set('Bounds', 'high', str(self.zmax))
+            meta.set('Bounds', 'low', str(self.zmin))
             meta.add_section('Size')
-            meta.set('Size','height',str(self.height))
-            meta.set('Size','width',str(self.width))
-            meta.set('Size','depth',str(self.zmax - self.zmin))
+            meta.set('Size', 'height', str(self.height))
+            meta.set('Size', 'width', str(self.width))
+            meta.set('Size', 'depth', str(self.zmax - self.zmin))
             meta.add_section('Model')
-            meta.set('Model','x_width',self.ui.ModelWidth.text())
-            meta.set('Model','y_height',self.ui.ModelHeight.text())
-            meta.set('Model','z_depth',self.ui.ModelDepth.text())
-            meta.set('Model','scale_depth',self.ui.ScaleDepth.text())
-            meta.set('Model','scale_factor',self.ui.ScaleFactor.text())
+            meta.set('Model', 'x_width', self.ui.ModelWidth.text())
+            meta.set('Model', 'y_height', self.ui.ModelHeight.text())
+            meta.set('Model', 'z_depth', self.ui.ModelDepth.text())
+            meta.set('Model', 'scale_depth', self.ui.ScaleDepth.text())
+            meta.set('Model', 'scale_factor', self.ui.ScaleFactor.text())
             meta.add_section('Heightmap')
-            meta.set('Heightmap','width',self.ui.ImageWidth.text())
-            meta.set('Heightmap','height',self.ui.ImageHeight.text())
+            meta.set('Heightmap', 'width', self.ui.ImageWidth.text())
+            meta.set('Heightmap', 'height', self.ui.ImageHeight.text())
         else:
-            meta['Source'] = { 'name' : layer.name() }
-            meta['Bounds'] = { 'north' : str(rec.yMaximum()),
-                               'south' : str(rec.yMinimum()),
-                               'west' : str(rec.xMinimum()),
-                               'east' : str(rec.xMaximum()),
-                               'high' : str(self.zmax),
-                               'low' : str(self.zmin)
-                             }
-            meta['Size'] = { 'height' : str(self.height),
-                             'width' : str(self.width),
-                             'depth' : str(self.zmax - self.zmin)
-                           }
-            meta['Model'] = { 'x_width' : self.ui.ModelWidth.text(),
-                              'y_height' : self.ui.ModelHeight.text(),
-                              'z_depth' : self.ui.ModelDepth.text(),
-                              'scale_depth' : self.ui.ScaleDepth.text(),
-                              'scale_factor' : self.ui.ScaleFactor.text()
-                            }
-            meta['Heightmap'] = { 'width' : self.ui.ImageWidth.text(),
-                                  'height' : self.ui.ImageHeight.text()
-                                }
+            meta['Source'] = {'name': layer.name()}
+            meta['Bounds'] = {'north': str(rec.yMaximum()),
+                              'south': str(rec.yMinimum()),
+                              'west': str(rec.xMinimum()),
+                              'east': str(rec.xMaximum()),
+                              'high': str(self.zmax),
+                              'low': str(self.zmin)}
+            meta['Size'] = {'height': str(self.height),
+                            'width': str(self.width),
+                            'depth': str(self.zmax - self.zmin)}
+            meta['Model'] = {'x_width': self.ui.ModelWidth.text(),
+                             'y_height': self.ui.ModelHeight.text(),
+                             'z_depth': self.ui.ModelDepth.text(),
+                             'scale_depth': self.ui.ScaleDepth.text(),
+                             'scale_factor': self.ui.ScaleFactor.text()}
+            meta['Heightmap'] = {'width': self.ui.ImageWidth.text(),
+                                 'height': self.ui.ImageHeight.text()}
         with open(metafile, 'w') as mfile:
-          meta.write(mfile)
+            meta.write(mfile)
 
     def start_path_tracer(self):
-            pt = PathTracerGUI(heightmap=self.heightmap,
-                               x_width=self.ui.ModelWidth.text(),
-                               z_depth=self.ui.ScaleDepth.text(),
-                               zero_x=50,
-                               zero_y=50,
-                               safe_z=3,
-                               feed_plunge=200,
-                               feed_carve=2000,
-                               optimize=0,
-                               x_offset=0,
-                               y_offset=0,
-                               z_offset=0,
-                               laser_mode=False
-                               )
-            pt.setModal(True)
-            pt.show()
-            pt.exec_()
-          
+        pt = PathTracerGUI(heightmap=self.heightmap,
+                           x_width=self.ui.ModelWidth.text(),
+                           z_depth=self.ui.ScaleDepth.text(),
+                           zero_x=50,
+                           zero_y=50,
+                           safe_z=3,
+                           feed_plunge=200,
+                           feed_carve=2000,
+                           optimize=0,
+                           x_offset=0,
+                           y_offset=0,
+                           z_offset=0,
+                           laser_mode=False
+                           )
+        pt.setModal(True)
+        pt.show()
+        pt.exec_()
+
     def export_heightmap(self):
         """Export the heightmap.
-        
+
         Show a save dialog, then use GDAL to translate the chosen raster
         layer to a 16-bit PNG scaled to the chosen image dimensions, with
         the output levels scaled up to full range.
-        
+
         """
         # Get the selected layer from the box.
         layer = self.ui.LayerComboBox.currentLayer()

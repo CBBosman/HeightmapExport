@@ -3,7 +3,7 @@ Export a heightmap from a raster layer to a PNG.
 
 Heightmap Export, a QGIS plugin by Nathaniel Klumb
 
-This plugin was created to make it easy to take a raster layer, such as 
+This plugin was created to make it easy to take a raster layer, such as
 clipped USGS DEM data, and export it to a 16-bit PNG image to load into
 CAM software to create terrain relief models using CNC.
 
@@ -19,14 +19,15 @@ from qgis.PyQt.QtWidgets import QAction
 from qgis.PyQt.QtGui import QIcon
 from .heightmapexport_dialog import HeightmapExportDialog
 try:
-  # If this imports, we're in QGIS 2.
-  # It was renamed 'Qgis' in QGIS 3.
-  from qgis.core import QGis
-  # QGIS 2 imports.
-  from . import resources_rc_2
+    # If this imports, we're in QGIS 2.
+    # It was renamed 'Qgis' in QGIS 3.
+    from qgis.core import QGis
+    # QGIS 2 imports.
+    from . import resources_rc_2
 except ImportError:
-  # QGIS 3 imports.
-  from . import resources_rc_3
+    # QGIS 3 imports.
+    from . import resources_rc_3
+
 
 class HeightmapExport(object):
     """Implement a QGIS Plugin."""

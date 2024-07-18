@@ -7,7 +7,7 @@ to render the paths into G-code engraving toolpaths
 mapped onto the surface of the heightmap.
 """
 import sys
-from os.path import basename,splitext,isfile
+from os.path import basename, splitext, isfile
 from configparser import ConfigParser
 
 try:
@@ -22,8 +22,8 @@ try:
     from PyQt4.QtCore import Qt
     from .PathTracerGUI_UI_2 import Ui_PathTracerGUI_UI
 except ImportError:
-    #QGIS 3 imports.
-    from qgis.PyQt.QtWidgets import (QDialog, QFileDialog, 
+    # QGIS 3 imports.
+    from qgis.PyQt.QtWidgets import (QDialog, QFileDialog,
                                      QApplication, QMessageBox)
     from qgis.PyQt.QtGui import (QColor, QCursor, QDoubleValidator,
                                  QIntValidator)
@@ -32,15 +32,16 @@ except ImportError:
 
 from ..main.path_tracer import PathTracer
 
+
 class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
     """    Present a dialog for setting options and running PathTracer.
-    
+
     PathTracer maps paths from an SVG onto a heightmap from a PNG image. """
     try:
         QGis.QGIS_VERSION
         QGIS_VERSION = 2
-    except:
-        QGIS_VERSION = 3    
+    except NameError:
+        QGIS_VERSION = 3
 
     SIZE_DECIMAL_DIGITS = 3
     MAXIMUM_ALLOWED_VALUE = 1000000
@@ -55,7 +56,7 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
         """ Load initial values and setup PathTracer dialog. """
         super(PathTracerGUI, self).__init__(parent)
         self.setupUi(self)
-        self.setFixedSize(self.width(),self.height())
+        self.setFixedSize(self.width(), self.height())
         self.pt = PathTracer()
 
         if heightmap is not None:
@@ -92,13 +93,13 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
         self.power_pct.setText('100')
         self.power_min.setText('0')
         self.power_max.setText('1000')
-            
+
         self.browse_heightmap.clicked.connect(self.select_heightmap)
         self.browse_pathmap.clicked.connect(self.select_pathmap)
         self.exportGcode.clicked.connect(self.export_gcode)
         self.laser_mode.clicked.connect(self.set_lasermode)
         self.enable_offsets.clicked.connect(self.set_offsets)
-        
+
         self.ZeroNW.clicked.connect(self.zero_nw)
         self.ZeroN.clicked.connect(self.zero_n)
         self.ZeroNE.clicked.connect(self.zero_ne)
@@ -111,7 +112,7 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
         self.zero_x.textEdited.connect(self.check_zero)
         self.zero_y.textEdited.connect(self.check_zero)
         self.check_zero()
-        
+
         validDecimals = QDoubleValidator(0.1 ** self.SIZE_DECIMAL_DIGITS,
                                          self.MAXIMUM_ALLOWED_VALUE,
                                          self.SIZE_DECIMAL_DIGITS)
@@ -129,7 +130,7 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
         self.safe_z.textEdited.connect(self.check_ready)
         self.optimize.setValidator(validDecimals)
         self.optimize.textEdited.connect(self.check_ready)
-        
+
         self.power_pct.setValidator(validDecimals)
         self.power_pct.textEdited.connect(self.check_ready)
         self.power_max.setValidator(validDecimals)
@@ -142,13 +143,13 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
         self.offset_y.textEdited.connect(self.check_ready)
         self.offset_z.setValidator(validDecimals)
         self.offset_z.textEdited.connect(self.check_ready)
-        
+
         validIntegers = QIntValidator(1, self.MAXIMUM_FEED_RATE)
         self.feed_plunge.setValidator(validIntegers)
         self.feed_plunge.textEdited.connect(self.check_ready)
         self.feed_carve.setValidator(validIntegers)
         self.feed_carve.textEdited.connect(self.check_ready)
-        
+
         if (heightmap is not None) and isfile(heightmap):
             self.heightmap_selected(heightmap)
             self.update_from_x_width()
@@ -162,7 +163,7 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
             1 / float(self.feed_carve.text())
             float(self.zero_x.text())
             float(self.zero_y.text())
-            #float(self.optimize.text()) # We can assume zero if NaN
+            # float(self.optimize.text()) # We can assume zero if NaN
             float(self.safe_z.text())
             if self.laser_mode.isChecked():
                 1 / float(self.power_pct.text())
@@ -171,10 +172,10 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
             else:
                 1 / float(self.feed_plunge.text())
             ready = True
-        except (ValueError,ZeroDivisionError):
+        except (ValueError, ZeroDivisionError):
             ready = False
         self.exportGcode.setEnabled(ready and (self.pathmap_file.text() != ''))
-            
+
     def set_lasermode(self):
         """ Enable or disable laser options in the UI. """
         if self.laser_mode.isChecked():
@@ -194,7 +195,7 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
             self.l_power_min.setEnabled(False)
             self.feed_plunge.setEnabled(True)
         self.check_ready()
-        
+
     def set_offsets(self):
         """ Enable or disable offset options in the UI. """
         if self.enable_offsets.isChecked():
@@ -212,7 +213,7 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
             self.l_offset_y.setEnabled(False)
             self.l_offset_z.setEnabled(False)
         self.check_ready()
-        
+
     def update_from_x_width(self):
         """ Update the dimensions to scale based on a given X width. """
         try:
@@ -220,12 +221,12 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
         except ValueError:
             return
         self.y_height.setText('{}'.format(round(x / self.pt.cols * self.pt.rows,
-                                          self.SIZE_DECIMAL_DIGITS)))
+                                                self.SIZE_DECIMAL_DIGITS)))
         if self.z:
             self.z_depth.setText('{}'.format(round(x / self.x * self.z,
                                              self.SIZE_DECIMAL_DIGITS)))
         self.check_ready()
-        
+
     def update_from_y_height(self):
         """ Update the dimensions to scale based on a given Y height. """
         try:
@@ -238,20 +239,20 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
             self.z_depth.setText('{}'.format(round(y / self.y * self.z,
                                                    self.SIZE_DECIMAL_DIGITS)))
         self.check_ready()
-        
-    def load_meta(self,meta,field,section,item):
+
+    def load_meta(self, meta, field, section, item):
         """ Load a data item from the metadata file into a UI field. """
         try:
             if self.QGIS_VERSION == 2:
-              value = float(meta.get(section,item))
+                value = float(meta.get(section, item))
             else:
-              value = float(meta[section][item])
-        except (IndexError,ValueError):
+                value = float(meta[section][item])
+        except (IndexError, ValueError):
             value = 0
         field.setText(str(value))
         return value
-    
-    def heightmap_selected(self,heightmap_file):
+
+    def heightmap_selected(self, heightmap_file):
         """ Load a heightmap PNG file and set UI values based on it. """
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
         if self.pt.load_heightmap(heightmap_file):
@@ -263,10 +264,10 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
             if isfile(metafile):
                 meta = ConfigParser()
                 meta.read(metafile)
-                self.x = self.load_meta(meta,self.x_width,'Model','x_width')
+                self.x = self.load_meta(meta, self.x_width, 'Model', 'x_width')
                 self.y = self.x / self.pt.cols * self.pt.rows
                 self.update_from_x_width()
-                self.z = self.load_meta(meta,self.z_depth,'Model','z_depth')
+                self.z = self.load_meta(meta, self.z_depth, 'Model', 'z_depth')
             self.groupCAM.setEnabled(True)
             self.browse_pathmap.setEnabled(True)
             self.pathmap_file.setEnabled(True)
@@ -277,7 +278,7 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
             self.pathmap_file.setEnabled(False)
         QApplication.restoreOverrideCursor()
         self.check_ready()
-    
+
     def select_heightmap(self):
         """ Show an open file dialog to select a heightmap PNG. """
         if self.QGIS_VERSION == 2:
@@ -319,18 +320,18 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
                 self.pathmap_file.setText('')
             QApplication.restoreOverrideCursor()
             self.check_ready()
-            
+
     def export_gcode(self):
         """ Generate and export G-code. """
         suggestion = '{}.nc'.format(splitext(self.pt.pathmap)[0])
         if self.QGIS_VERSION == 2:
-          gcode_file = \
+            gcode_file = \
               QFileDialog.getSaveFileName(self,
                                           'Save G-code as...',
                                           suggestion,
                                           filter='G-code file (*.nc)')
         else:
-          gcode_file, __ = \
+            gcode_file, __ = \
               QFileDialog.getSaveFileName(self,
                                           'Save G-code as...',
                                           suggestion,
@@ -347,7 +348,7 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
                 laser_mode = True
             else:
                 spindle_speed = None
-                laser_mode = False            
+                laser_mode = False
             if self.enable_offsets.isChecked():
                 try:
                     offset_x = float(self.offset_x.text())
@@ -385,8 +386,8 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
                                 self.rescale_heightmap.isChecked()
                                )
             QApplication.restoreOverrideCursor()
-            QMessageBox.about(self,'PathTracer','G-code exported.')
-                                                    
+            QMessageBox.about(self, 'PathTracer', 'G-code exported.')
+
     def check_zero(self):
         """ Mark a radio button if the text zeroes match it. """
         self.Zeroes.setExclusive(False)
@@ -402,39 +403,48 @@ class PathTracerGUI(QDialog, Ui_PathTracerGUI_UI):
         self.ZeroW.setChecked((x == '0') and (y == '50'))
         self.ZeroC.setChecked((x == '50') and (y == '50'))
         self.Zeroes.setExclusive(True)
-    
-    def set_zero(self,x,y):
+
+    def set_zero(self, x, y):
         """ Set the X and Y zeroes. """
         self.zero_x.setText(str(x))
         self.zero_y.setText(str(y))
- 
+
     def zero_nw(self):
         """ Set the zero to the NW corner. """
-        self.set_zero(0,100)
+        self.set_zero(0, 100)
+
     def zero_n(self):
         """ Set the zero to the center of the N edge. """
-        self.set_zero(50,100)
+        self.set_zero(50, 100)
+
     def zero_ne(self):
         """ Set the zero to the NE corner. """
-        self.set_zero(100,100)
+        self.set_zero(100, 100)
+
     def zero_e(self):
         """ Set the zero to the center of the E edge. """
-        self.set_zero(100,50)
+        self.set_zero(100, 50)
+
     def zero_se(self):
         """ Set the zero to the SE corner. """
-        self.set_zero(100,0)
+        self.set_zero(100, 0)
+
     def zero_s(self):
         """ Set the zero to the center of the S edge. """
-        self.set_zero(50,0)
+        self.set_zero(50, 0)
+
     def zero_sw(self):
         """ Set the zero to the SW corner. """
-        self.set_zero(0,0)
+        self.set_zero(0, 0)
+
     def zero_w(self):
         """ Set the zero to the center of the W edge. """
-        self.set_zero(0,50)
+        self.set_zero(0, 50)
+
     def zero_c(self):
         """ Set the zero to the center. """
-        self.set_zero(50,50)
-        
+        self.set_zero(50, 50)
+
+
 if __name__ == '__main__':
     print('GUI version.')

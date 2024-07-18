@@ -11,47 +11,47 @@ import argparse
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Trace paths onto a heightmap.')
-    parser.add_argument('-hm','--heightmap',default=None,
+    parser.add_argument('-hm', '--heightmap', default=None,
                         help='Heightmap PNG filename.')
-    parser.add_argument('-pm','--pathmap',default=None,
+    parser.add_argument('-pm', '--pathmap', default=None,
                         help='Pathmap SVG filename.')
-    parser.add_argument('-pv','--preview',default=None,
+    parser.add_argument('-pv', '--preview', default=None,
                         help='Preview PNG filename.')
-    parser.add_argument('-gc','--gcode',default=None,help='G-code filename.')
-    parser.add_argument('-xw','--x_width',default=None,type=float,
+    parser.add_argument('-gc', '--gcode', default=None, help='G-code filename.')
+    parser.add_argument('-xw', '--x_width', default=None, type=float,
                         help='X-axis width of model.')
-    parser.add_argument('-zd','--z_depth',default=None,type=float,
+    parser.add_argument('-zd', '--z_depth', default=None, type=float,
                         help='Z-axis maximum depth.')
-    parser.add_argument('-sz','--safe_z',default=3,type=float,
+    parser.add_argument('-sz', '--safe_z', default=3, type=float,
                         help='Safe Z between paths, >0.')
-    parser.add_argument('-0x','--zero_x',default=50,type=float,
+    parser.add_argument('-0x', '--zero_x', default=50, type=float,
                         help='X0 as percent from left edge.')
-    parser.add_argument('-0y','--zero_y',default=50,type=float,
+    parser.add_argument('-0y', '--zero_y', default=50, type=float,
                         help='Y0 as percent from front edge.')
-    parser.add_argument('-ox','--offset_x',default=0,type=float,
+    parser.add_argument('-ox', '--offset_x', d efault=0, type=float,
                         help='Add offset to X values.')
-    parser.add_argument('-oy','--offset_y',default=0,type=float,
+    parser.add_argument('-oy', '--offset_y', default=0, type=float,
                         help='Add offset to Y values.')
-    parser.add_argument('-oz','--offset_z',default=0,type=float,
+    parser.add_argument('-oz', '--offset_z', default=0, type=float,
                         help='Add offset to Z values.')
-    parser.add_argument('-fp','--feed_plunge',default=200,type=float,
+    parser.add_argument('-fp', '--feed_plunge', default=200, type=float,
                         help='Feed rate entering path.')
-    parser.add_argument('-fc','--feed_carve',default=2000,type=float,
+    parser.add_argument('-fc', '--feed_carve', default=2000, type=float,
                         help='Feed rate following path.')
-    parser.add_argument('-ss','--spindle_speed',default=None,type=float,
+    parser.add_argument('-ss', '--spindle_speed', default=None, type=float,
                         help='Spindle speed or laser setting.')
-    parser.add_argument('-lm','--laser_mode',action='store_true',
+    parser.add_argument('-lm', '--laser_mode', action='store_true',
                         help='Enable laser mode output.')
-    parser.add_argument('-rh','--rescale_heightmap',action='store_true',
+    parser.add_argument('-rh', '--rescale_heightmap', action='store_true',
                         help='Export rescaled heightmap.')
-    parser.add_argument('-op','--optimize',default=0,type=float,
+    parser.add_argument('-op', '--optimize', default=0, type=float,
                         help='Optimization distance.')
     args = parser.parse_args()
-  
-    if ((args.heightmap is not None) and 
-        (args.pathmap is not None) and 
-        (args.x_width is not None) and 
-        (args.z_depth is not None)):
+
+    if ((args.heightmap is not None) and
+            (args.pathmap is not None) and
+            (args.x_width is not None) and
+            (args.z_depth is not None)):
         from main.path_tracer import PathTracer
         pt = PathTracer(heightmap=args.heightmap, pathmap=args.pathmap)
         pt.outputpng = args.preview

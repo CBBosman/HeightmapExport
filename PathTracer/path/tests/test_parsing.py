@@ -157,7 +157,7 @@ class TestParser(unittest.TestCase):
         """Exponents and other number format cases"""
         # It can be e or E, the plus is optional, and a minimum of +/-3.4e38 must be supported.
         path1 = parse_path('M-3.4e38 3.4E+38L-3.4E-38,3.4e-38')
-        path2 = Path(Move(-3.4e+38 +  3.4e+38j), Line(-3.4e+38 + 3.4e+38j, -3.4e-38 + 3.4e-38j))
+        path2 = Path(Move(-3.4e+38 + 3.4e+38j), Line(-3.4e+38 + 3.4e+38j, -3.4e-38 + 3.4e-38j))
         self.assertEqual(path1, path2)
 
     def test_errors(self):
